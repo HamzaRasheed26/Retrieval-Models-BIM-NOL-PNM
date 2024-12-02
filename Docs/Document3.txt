@@ -1,0 +1,2 @@
+Title: Basics of Search Engine Design
+Content: Search engines are essential tools for locating information. They function by indexing documents and ranking them based on relevance to the user's query.

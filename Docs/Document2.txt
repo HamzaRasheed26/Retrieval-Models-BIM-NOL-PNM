@@ -1,0 +1,2 @@
+Title: Introduction to Machine Learning
+Content: Machine learning is a branch of artificial intelligence that enables systems to learn and improve from experience. It has numerous applications, including data retrieval and information systems.

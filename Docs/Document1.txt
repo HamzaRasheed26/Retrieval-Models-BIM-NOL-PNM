@@ -1,0 +1,2 @@
+Title: Basics of Information Retrieval
+Content: Information retrieval (IR) is the activity of obtaining information resources relevant to an information need from a collection. IR systems help users find the information they seek.
