@@ -1,0 +1,13 @@
+{
+    "title": "Exploration of Mars",
+    "sections": [
+        {
+            "heading": "Why Mars?",
+            "content": "Mars is a key target for space exploration due to its potential for life."
+        },
+        {
+            "heading": "NASA's Mars Missions",
+            "content": "NASA's Perseverance rover is exploring the surface of Mars."
+        }
+    ]
+}
