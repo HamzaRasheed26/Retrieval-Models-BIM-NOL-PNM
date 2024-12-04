@@ -1,11 +1,16 @@
 import os
 import json
 from itertools import combinations
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
 
 class ProximalNodesModel:
     def __init__(self):
         # Initialize an empty graph structure
         self.graph = {}
+        self.stop_words = set(stopwords.words('english'))
+        self.stemmer = PorterStemmer()
 
     def add_node(self, node):
         """Add a node to the graph if it doesn't exist."""
@@ -27,7 +32,7 @@ class ProximalNodesModel:
                 with open(file_path, 'r', encoding='utf-8') as file:
                     document = json.load(file)
                     doc_id = document["title"]
-                    self.add_node(doc_id)  # Add document as a node
+                    self.add_node(filename)  # Add document as a node
                     
                     # Process terms from document content
                     all_terms = set()
@@ -35,15 +40,19 @@ class ProximalNodesModel:
                         terms = self.preprocess(section["content"])
                         all_terms.update(terms)
                         for term in terms:
-                            self.add_edge(term, doc_id)  # Link terms to the document
+                            self.add_edge(term, filename)  # Link terms to the document
                     
-                    # Add relationships between terms
-                    for term1, term2 in combinations(all_terms, 2):
-                        self.add_edge(term1, term2)
+                        # Add relationships between terms
+                        for i in range(len(terms) - 1):
+                            term1, term2 = terms[i], terms[i + 1]
+                            # for term1, term2 in combinations(all_terms, 2):
+                            self.add_edge(term1, term2)
 
     def preprocess(self, text):
-        """Preprocess text to extract terms (basic tokenization)."""
-        return [word.lower() for word in text.split() if word.isalnum()]
+        """Preprocess text by tokenizing, removing stop words, and stemming."""
+        tokens = word_tokenize(text.lower())
+        filtered_tokens = [self.stemmer.stem(word) for word in tokens if word.isalnum() and word not in self.stop_words]
+        return filtered_tokens
 
     def retrieve_connected_documents(self, proximal_nodes):
         """Retrieve documents directly or indirectly connected to the given proximal nodes."""
@@ -53,7 +62,7 @@ class ProximalNodesModel:
         # Breadth-first search to explore the graph
         queue = list(proximal_nodes)
         while queue:
-            current_node = queue.pop(0)
+            current_node = self.preprocess(queue.pop(0))[0]
             if current_node not in visited:
                 visited.add(current_node)
                 for neighbor in self.graph.get(current_node, []):
@@ -79,7 +88,7 @@ def main():
     model = ProximalNodesModel()
 
     # Folder containing structured documents
-    docs_folder = "Docs"
+    docs_folder = "Structured_Docs"
     
     # Build the network
     print("Building the network...")

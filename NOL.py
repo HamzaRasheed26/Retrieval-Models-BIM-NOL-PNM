@@ -38,37 +38,27 @@ class NonOverlappedListModel:
                     self.term_doc_map[term].add(filename)
 
     def retrieve_documents_for_term(self, term):
-        """Retrieve documents containing all the specified terms."""
+        """Retrieve documents containing the specified term."""
         # Preprocess the input term to handle multiple words
         stemmed_terms = self.preprocess_text(term)
         
-        # If no terms remain after preprocessing, return an empty set
-        if not stemmed_terms:
-            return set()
-        
-        # Initialize the result with the documents of the first term
-        docs = self.term_doc_map.get(stemmed_terms[0], set())
-        
-        # Intersect with documents of subsequent terms
-        for stemmed_term in stemmed_terms[1:]:
-            docs = docs.intersection(self.term_doc_map.get(stemmed_term, set()))
+        # Collect documents for all stemmed terms (union of all term's document lists)
+        docs = set()
+        for stemmed_term in stemmed_terms:
+            docs.update(self.term_doc_map.get(stemmed_term, set()))
         
         return docs
 
     def retrieve_non_overlapping_documents(self, terms):
         """Retrieve a non-overlapping set of documents for multiple terms."""
-        non_overlapping_docs = {}  # Dictionary to store documents and their matching terms
+        non_overlapping_docs = set()  # Use a set to avoid duplicate documents
 
         for term in terms:
             term_docs = self.retrieve_documents_for_term(term)  # Get documents for the term
-            for doc in term_docs:
-                # Initialize the list if the document is not already in the dictionary
-                if doc not in non_overlapping_docs:
-                    non_overlapping_docs[doc] = []
-                # Append the term to the list of matched terms for the document
-                non_overlapping_docs[doc].append(term)
-        
+            non_overlapping_docs.update(term_docs)  # Union of document sets
+
         return non_overlapping_docs
+
 
 
 # Example Usage
@@ -90,9 +80,7 @@ def main():
     
     print(f"\nNon-Overlapping Documents")
     if results:
-        for doc, matched_terms in results.items():
-            # Display document name and the matched terms
-            print(f"Document: {doc}, Matches: {', '.join(matched_terms)}")
+        print(f"Document: {results}")
     else:
         print("No documents found for the specified terms.")
 
